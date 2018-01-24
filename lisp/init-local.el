@@ -1,3 +1,7 @@
+;;; Need to manually install ggtags vlf ahg ace-jump, helm, helm-swoop, etc...
+
+(require 'org)
+
 (defun xah-copy-line-or-region ()
   "Copy current line, or text selection.
 When `universal-argument' is called first, copy whole buffer (but respect `narrow-to-region')."
@@ -45,9 +49,12 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 
 (global-set-key (kbd "<f1>") 'help-command)
 (global-set-key (kbd "<f2>") 'xah-cut-line-or-region)  ; cut
+(global-set-key (kbd "<C-f2>") 'bm-toggle)
+(global-set-key (kbd "<f10>")   'bm-next)
+(global-set-key (kbd "<S-f10>") 'bm-previous)
 (global-set-key (kbd "<f3>") 'xah-copy-line-or-region) ; copy
 (global-set-key [C-f3] 'highlight-symbol-at-point)
-(global-set-key (kbd "<f4>") 'yank) ; paste
+(global-set-key (kbd "<f4>") 'yank)
 (global-set-key [(f5)] 'recompile)
 (global-set-key [C-f5] 'compile)
 (global-set-key (kbd "<f8>") 'ggtags-find-tag-dwim)
@@ -60,12 +67,18 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 
 (define-key global-map (kbd "C-z") 'undo-tree-undo)
 (define-key global-map (kbd "C-S-z") 'undo-tree-redo)
+(define-key global-map (kbd "C-;") 'evilnc-comment-or-uncomment-lines)
+(global-set-key  (kbd "C-c C-c") 'evilnc-comment-or-uncomment-lines)
 
 (define-key global-map (kbd "M-RET") 'ace-jump-mode)
 (global-set-key [(control up)]  'move-line-up)
 (global-set-key [(control down)]  'move-line-down)
 (global-set-key [(control l)] 'kill-whole-line)
 (global-set-key [?\e deletechar] 'kill-word)
+
+(global-set-key (kbd "<left-fringe> <mouse-5>") 'bm-next-mouse)
+(global-set-key (kbd "<left-fringe> <mouse-4>") 'bm-previous-mouse)
+(global-set-key (kbd "<left-fringe> <mouse-1>") 'bm-toggle-mouse)
 
 (setq redisplay-dont-pause t)
 
@@ -74,10 +87,14 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 
 (require 'vlf-setup)
 
-(require 'goto-last-change)
-(global-set-key "\C-x\C-\\" 'goto-last-change)
+;; (require 'goto-last-change)
+;; (global-set-key "\C-x\C-\\" 'goto-last-change)
 
+;; (require 'ace-isearch)
+;; (global-ace-isearch-mode +1)
 
+;; (custom-set-variables
+;;  '(ace-isearch-input-length 99))
 
 ;; Save all tempfiles in $TMPDIR/emacs$UID/
 (defconst emacs-tmp-dir (format "%s/%s%s/" temporary-file-directory "emacs" (user-uid)))
@@ -95,7 +112,7 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-(require 'ahg)
+;; (require 'ahg)
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
 (add-hook 'c-mode-common-hook 'google-make-newline-indent)
@@ -106,3 +123,4 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
               (ggtags-mode 1))))
 
 (provide 'init-local)
+;;; init-local.el ends here
