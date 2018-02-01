@@ -1,28 +1,5 @@
 ;;; Need to manually install ggtags vlf ahg ace-jump, helm, helm-swoop, etc...
 
-;;; Prevent stuff
-(add-to-list 'load-path "/SCRATCH/anku/prevent/scripts/emacs/")
-
-
-(load "prevent-common")
-(load "prevent-copyright")
-(load "prevent-gdb")
-(load "prevent-compile")
-(load "prevent-create-source.el")
-(load "prevent-insert-include.el")
-(load "prevent-syntax")
-(load "codexm-mode")
-
-(add-hook 'c-mode-common-hook 'prevent-indentation)
-
-(defun my-prevent-config ()
-  (local-set-key (kbd "{") 'prevent-start-block) ; add a key
-  )
-
-(add-hook 'c-mode-common-hook 'my-prevent-config)
-
-(add-to-list 'auto-mode-alist '("\\.ast$" . c-mode))
-
 (require 'org)
 
 (defun xah-copy-line-or-region ()
@@ -144,6 +121,29 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 ;;           (lambda ()
 ;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
 ;;               (ggtags-mode 1))))
+
+;;; Prevent stuff
+(add-to-list 'load-path "/SCRATCH/anku/prevent/scripts/emacs/")
+
+
+(load "prevent-common")
+(load "prevent-copyright")
+(load "prevent-gdb")
+(load "prevent-compile")
+(load "prevent-create-source.el")
+(load "prevent-insert-include.el")
+(load "prevent-syntax")
+(load "codexm-mode")
+
+(add-hook 'c-mode-common-hook 'prevent-indentation)
+
+(defun my-prevent-config ()
+  (local-set-key (kbd "{") 'prevent-start-block) ; add a key
+  )
+
+(add-hook 'c-mode-common-hook 'my-prevent-config)
+
+(add-to-list 'auto-mode-alist '("\\.ast$" . c-mode))
 
 (provide 'init-local)
 ;;; init-local.el ends here
