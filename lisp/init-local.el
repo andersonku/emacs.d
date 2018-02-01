@@ -91,7 +91,7 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (define-key global-map (kbd "C-z") 'undo-tree-undo)
 (define-key global-map (kbd "C-S-z") 'undo-tree-redo)
 (define-key global-map (kbd "C-;") 'evilnc-comment-or-uncomment-lines)
-(global-set-key  (kbd "C-c C-c") 'evilnc-comment-or-uncomment-lines)
+;;; (global-set-key  (kbd "C-c C-c") 'evilnc-comment-or-uncomment-lines)
 
 (define-key global-map (kbd "M-RET") 'ace-jump-mode)
 (global-set-key [(control up)]  'move-line-up)
@@ -136,14 +136,14 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;; (require 'ahg)
-(require 'google-c-style)
-(add-hook 'c-mode-common-hook 'google-set-c-style)
-(add-hook 'c-mode-common-hook 'google-make-newline-indent)
+;; (require 'google-c-style)
+;; (add-hook 'c-mode-common-hook 'google-set-c-style)
+;; (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-              (ggtags-mode 1))))
+;; (add-hook 'c-mode-common-hook
+;;           (lambda ()
+;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+;;               (ggtags-mode 1))))
 
 (provide 'init-local)
 ;;; init-local.el ends here
