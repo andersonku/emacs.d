@@ -1,5 +1,5 @@
 ;; save a list of open files in ~/.emacs.d/.emacs.desktop
-(setq desktop-path (list user-emacs-directory)
+(setq desktop-path (list (concat user-emacs-directory system-name))
       desktop-auto-save-timeout 600)
 (desktop-save-mode 1)
 
