@@ -56,6 +56,7 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (global-set-key [C-f3] 'highlight-symbol-at-point)
 (global-set-key (kbd "<f4>") 'yank)
 (global-set-key [(f5)] 'recompile)
+(global-set-key [(f29)] 'compile)
 (global-set-key [C-f5] 'compile)
 (global-set-key (kbd "<f8>") 'ggtags-find-tag-dwim)
 (global-set-key (kbd "<f9>") 'ff-get-other-file)
@@ -66,6 +67,7 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (global-set-key (kbd "M-h") 'backward-kill-word)
 
 (define-key global-map (kbd "C-z") 'undo-tree-undo)
+(define-key global-map (kbd "C-x C-z") 'fzf)
 (define-key global-map (kbd "C-S-z") 'undo-tree-redo)
 (define-key global-map (kbd "C-;") 'evilnc-comment-or-uncomment-lines)
 ;;; (global-set-key  (kbd "C-c C-c") 'evilnc-comment-or-uncomment-lines)
@@ -82,13 +84,14 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 
 (setq redisplay-dont-pause t)
 
-(remove-hook 'find-file-hooks 'vc-find-file-hook)
-(setq vc-handled-backends ())
+;; Was this for some 1A crap?
+;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
+;; (setq vc-handled-backends ())
 
-(require 'vlf-setup)
+;; (require 'vlf-setup)
 
-;; (require 'goto-last-change)
-;; (global-set-key "\C-x\C-\\" 'goto-last-change)
+(require-package 'goto-last-change)
+(global-set-key "\C-x\C-\\" 'goto-last-change)
 
 ;; (require 'ace-isearch)
 ;; (global-ace-isearch-mode +1)
@@ -112,7 +115,6 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-;; (require 'ahg)
 ;; (require 'google-c-style)
 ;; (add-hook 'c-mode-common-hook 'google-set-c-style)
 ;; (add-hook 'c-mode-common-hook 'google-make-newline-indent)
@@ -122,28 +124,44 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 ;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
 ;;               (ggtags-mode 1))))
 
+(require-package 'ace-jump-mode)
+(require-package 'highlight-symbol)
+(require-package 'bm)
+(require-package 'fzf)
+
 ;;; Prevent stuff
-(add-to-list 'load-path "/SCRATCH/anku/prevent/scripts/emacs/")
+(defun fzf-prevent-src-git ()
+  "Run fzf in prevent directory."
+  (interactive)
 
+  (let ((process-environment
+         (cons (concat "FZF_DEFAULT_COMMAND=git ls-files")
+               process-environment))
+        (path (locate-dominating-file default-directory ".git")))
+    (if path
+        (fzf/start "/SCRATCH/anku/prevent")
+      (user-error "Not inside a Git repository"))))
 
-(load "prevent-common")
-(load "prevent-copyright")
-(load "prevent-gdb")
-(load "prevent-compile")
-(load "prevent-create-source.el")
-(load "prevent-insert-include.el")
-(load "prevent-syntax")
-(load "codexm-mode")
+(if (file-directory-p "/SCRATCH/anku/prevent/scripts/emacs/")
+    (progn(add-to-list 'load-path "/SCRATCH/anku/prevent/scripts/emacs/")
+          (load "prevent-common")
+          (load "prevent-copyright")
+          (load "prevent-gdb")
+          (load "prevent-compile")
+          (load "prevent-create-source.el")
+          (load "prevent-insert-include.el")
+          (load "prevent-syntax")
+          (load "codexm-mode")
 
-(add-hook 'c-mode-common-hook 'prevent-indentation)
+          (add-hook 'c-mode-common-hook 'prevent-indentation)
 
-(defun my-prevent-config ()
-  (local-set-key (kbd "{") 'prevent-start-block) ; add a key
-  )
+          (defun my-prevent-config ()
+            (local-set-key (kbd "{") 'prevent-start-block) ; add a key
+            )
 
-(add-hook 'c-mode-common-hook 'my-prevent-config)
-
-(add-to-list 'auto-mode-alist '("\\.ast$" . c-mode))
+          (add-hook 'c-mode-common-hook 'my-prevent-config)
+          (define-key global-map (kbd "C-`") 'fzf-prevent-src-git)
+          (add-to-list 'auto-mode-alist '("\\.ast$" . c-mode))))
 
 (provide 'init-local)
 ;;; init-local.el ends here
