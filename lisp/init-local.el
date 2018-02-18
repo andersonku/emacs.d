@@ -2,6 +2,25 @@
 
 (require 'org)
 
+(add-to-list 'load-path
+             "~/.emacs.d/plugins/yasnippet")
+(require-package 'yasnippet)
+(yas-global-mode 1)
+(require-package 'yasnippet-snippets)
+(setq org-src-fontify-natively t)
+
+(defun my-put-file-name-on-clipboard ()
+  "Put the current file name on the clipboard"
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (with-temp-buffer
+        (insert filename)
+        (clipboard-kill-region (point-min) (point-max)))
+      (message filename))))
+
 (defun xah-copy-line-or-region ()
   "Copy current line, or text selection.
 When `universal-argument' is called first, copy whole buffer (but respect `narrow-to-region')."
@@ -66,10 +85,12 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (global-set-key (kbd "C-h") 'delete-backward-char)
 (global-set-key (kbd "M-h") 'backward-kill-word)
 
-(define-key global-map (kbd "C-z") 'undo-tree-undo)
+;;; (define-key global-map (kbd "C-z") 'undo-tree-undo)
+(define-key global-map (kbd "C-z") 'undo)
 (define-key global-map (kbd "C-x C-z") 'fzf)
 (define-key global-map (kbd "C-S-z") 'undo-tree-redo)
 (define-key global-map (kbd "C-;") 'evilnc-comment-or-uncomment-lines)
+(define-key global-map (kbd "C-'") 'rg)
 ;;; (global-set-key  (kbd "C-c C-c") 'evilnc-comment-or-uncomment-lines)
 
 (define-key global-map (kbd "M-RET") 'ace-jump-mode)
@@ -130,6 +151,9 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (require-package 'fzf)
 
 ;;; Prevent stuff
+;;; TODO: Handle multiple prevent directories
+;;; map from machines? environment variables
+
 (defun fzf-prevent-src-git ()
   "Run fzf in prevent directory."
   (interactive)
@@ -137,13 +161,13 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
   (let ((process-environment
          (cons (concat "FZF_DEFAULT_COMMAND=git ls-files")
                process-environment))
-        (path (locate-dominating-file default-directory ".git")))
+        (path (locate-dominating-file "/SCRATCH/anku/othello" ".git")))
     (if path
-        (fzf/start "/SCRATCH/anku/prevent")
+        (fzf/start "/SCRATCH/anku/othello")
       (user-error "Not inside a Git repository"))))
 
-(if (file-directory-p "/SCRATCH/anku/prevent/scripts/emacs/")
-    (progn(add-to-list 'load-path "/SCRATCH/anku/prevent/scripts/emacs/")
+(if (file-directory-p "/SCRATCH/anku/othello/scripts/emacs/")
+    (progn(add-to-list 'load-path "/SCRATCH/anku/othello/scripts/emacs/")
           (load "prevent-common")
           (load "prevent-copyright")
           (load "prevent-gdb")

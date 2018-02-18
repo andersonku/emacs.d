@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: cx
+# key: cx
+# --
+namespace codexm {
+$1
+} // namespace codexm
