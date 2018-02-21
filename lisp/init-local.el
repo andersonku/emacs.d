@@ -1,6 +1,82 @@
 ;;; Need to manually install ggtags vlf ahg ace-jump, helm, helm-swoop, etc...
 
 (require 'org)
+(require 'company)
+
+;; RTAGS stuff
+;;; Diagnostics
+(setq rtags-autostart-diagnostics t)
+(rtags-diagnostics)
+(setq rtags-completions-enabled t)
+(require 'flycheck-rtags)
+;; Optional explicitly select the RTags Flycheck checker for c or c++ major mode.
+;; Turn off Flycheck highlighting, use the RTags one.
+;; Turn off automatic Flycheck syntax checking rtags does this manually.
+(defun my-flycheck-rtags-setup ()
+  "Configure flycheck-rtags for better experience."
+  (flycheck-select-checker 'rtags)
+  (setq-local flycheck-check-syntax-automatically nil)
+  (setq-local flycheck-highlighting-mode nil))
+(add-hook 'c-mode-hook #'my-flycheck-rtags-setup)
+(add-hook 'c++-mode-hook #'my-flycheck-rtags-setup)
+(add-hook 'objc-mode-hook #'my-flycheck-rtags-setup)
+
+;;; Rtags Completion
+(push 'company-rtags company-backends)
+(define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
+(rtags-enable-standard-keybindings)
+(add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+(add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
+(add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
+
+;;; Rtags Navigation
+(defun use-rtags (&optional useFileManager)
+  (and (rtags-executable-find "rc")
+       (cond ((not (gtags-get-rootpath)) t)
+             ((and (not (eq major-mode 'c++-mode))
+                   (not (eq major-mode 'c-mode))) (rtags-has-filemanager))
+             (useFileManager (rtags-has-filemanager))
+             (t (rtags-is-indexed)))))
+
+(defun tags-find-symbol-at-point (&optional prefix)
+  (interactive "P")
+  (if (and (not (rtags-find-symbol-at-point prefix)) rtags-last-request-not-indexed)
+      (gtags-find-tag)))
+(defun tags-find-references-at-point (&optional prefix)
+  (interactive "P")
+  (if (and (not (rtags-find-references-at-point prefix)) rtags-last-request-not-indexed)
+      (gtags-find-rtag)))
+(defun tags-find-symbol ()
+  (interactive)
+  (call-interactively (if (use-rtags) 'rtags-find-symbol 'gtags-find-symbol)))
+(defun tags-find-references ()
+  (interactive)
+  (call-interactively (if (use-rtags) 'rtags-find-references 'gtags-find-rtag)))
+(defun tags-find-file ()
+  (interactive)
+  (call-interactively (if (use-rtags t) 'rtags-find-file 'gtags-find-file)))
+(defun tags-imenu ()
+  (interactive)
+  (call-interactively (if (use-rtags t) 'rtags-imenu 'idomenu)))
+
+(define-key c-mode-base-map (kbd "M-.") (function tags-find-symbol-at-point))
+(define-key c-mode-base-map (kbd "M-,") (function tags-find-references-at-point))
+(define-key c-mode-base-map (kbd "M-;") (function tags-find-file))
+(define-key c-mode-base-map (kbd "C-.") (function tags-find-symbol))
+(define-key c-mode-base-map (kbd "C-,") (function tags-find-references))
+(define-key c-mode-base-map (kbd "C-<") (function rtags-find-virtuals-at-point))
+(define-key c-mode-base-map (kbd "M-i") (function tags-imenu))
+
+(define-key global-map (kbd "M-.") (function tags-find-symbol-at-point))
+(define-key global-map (kbd "M-,") (function tags-find-references-at-point))
+(define-key global-map (kbd "M-;") (function tags-find-file))
+(define-key global-map (kbd "C-.") (function tags-find-symbol))
+(define-key global-map (kbd "C-,") (function tags-find-references))
+(define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
+(define-key global-map (kbd "M-i") (function tags-imenu))
+
+;;; Disable default VC for Magit
+;;; (setq vc-handled-backends nil)
 
 (add-to-list 'load-path
              "~/.emacs.d/plugins/yasnippet")
@@ -8,6 +84,10 @@
 (yas-global-mode 1)
 (require-package 'yasnippet-snippets)
 (setq org-src-fontify-natively t)
+
+(require 'whitespace)
+(setq whitespace-style '(face empty tabs lines-tail trailing))
+(global-whitespace-mode t)
 
 (defun my-put-file-name-on-clipboard ()
   "Put the current file name on the clipboard"
@@ -66,6 +146,8 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
   (forward-line -1)
   (indent-according-to-mode))
 
+(require-package 'fzf)
+
 (global-set-key (kbd "<f1>") 'help-command)
 (global-set-key (kbd "<f2>") 'xah-cut-line-or-region)  ; cut
 (global-set-key (kbd "<C-f2>") 'bm-toggle)
@@ -77,21 +159,22 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (global-set-key [(f5)] 'recompile)
 (global-set-key [(f29)] 'compile)
 (global-set-key [C-f5] 'compile)
-(global-set-key (kbd "<f8>") 'ggtags-find-tag-dwim)
+(global-set-key (kbd "<f8>") 'rtags-display-summary)
 (global-set-key (kbd "<f9>") 'ff-get-other-file)
-(global-set-key [(f11)] 'kill-this-buffer)
-(global-set-key [(C-f11)] 'kill-this-buffer)
-(global-set-key [(f12)] 'delete-frame)
+(global-set-key [(f10)] 'gud-next)
+(global-set-key [(f11)] 'gud-step)
+(global-set-key [(f12)] (lambda () (interactive) (kill-buffer (current-buffer))))
+;;; global-set-key [(f12)] 'delete-frame)
 (global-set-key (kbd "C-h") 'delete-backward-char)
 (global-set-key (kbd "M-h") 'backward-kill-word)
 
-;;; (define-key global-map (kbd "C-z") 'undo-tree-undo)
-(define-key global-map (kbd "C-z") 'undo)
-(define-key global-map (kbd "C-x C-z") 'fzf)
+
+(define-key global-map (kbd "C-z") 'undo-tree-undo)
 (define-key global-map (kbd "C-S-z") 'undo-tree-redo)
 (define-key global-map (kbd "C-;") 'evilnc-comment-or-uncomment-lines)
 (define-key global-map (kbd "C-'") 'rg)
-;;; (global-set-key  (kbd "C-c C-c") 'evilnc-comment-or-uncomment-lines)
+(define-key global-map (kbd "C-x C-z") 'fzf)
+(define-key global-map (kbd "C-`") 'fzf-projectile)
 
 (define-key global-map (kbd "M-RET") 'ace-jump-mode)
 (global-set-key [(control up)]  'move-line-up)
@@ -148,8 +231,6 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (require-package 'ace-jump-mode)
 (require-package 'highlight-symbol)
 (require-package 'bm)
-(require-package 'fzf)
-
 ;;; Prevent stuff
 ;;; TODO: Handle multiple prevent directories
 ;;; map from machines? environment variables
@@ -184,7 +265,6 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
             )
 
           (add-hook 'c-mode-common-hook 'my-prevent-config)
-          (define-key global-map (kbd "C-`") 'fzf-prevent-src-git)
           (add-to-list 'auto-mode-alist '("\\.ast$" . c-mode))))
 
 (provide 'init-local)
