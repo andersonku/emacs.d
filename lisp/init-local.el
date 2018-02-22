@@ -2,7 +2,6 @@
 
 (require 'org)
 (require 'company)
-
 ;; RTAGS stuff
 ;;; Diagnostics
 (setq rtags-autostart-diagnostics t)
@@ -156,9 +155,9 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
 (global-set-key (kbd "<f3>") 'xah-copy-line-or-region) ; copy
 (global-set-key [C-f3] 'highlight-symbol-at-point)
 (global-set-key (kbd "<f4>") 'yank)
-(global-set-key [(f5)] 'recompile)
-(global-set-key [(f29)] 'compile)
-(global-set-key [C-f5] 'compile)
+(global-set-key [(f5)] 'gud-cont)
+(global-set-key [(f7)] 'recompile)
+(global-set-key [C-f7] 'compile)
 (global-set-key (kbd "<f8>") 'rtags-display-summary)
 (global-set-key (kbd "<f9>") 'ff-get-other-file)
 (global-set-key [(f10)] 'gud-next)
