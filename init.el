@@ -123,7 +123,8 @@
 
 (require 'init-misc)
 
-(require 'init-folding)
+;; Origami gives me grief with large C++ files
+;; (require 'init-folding)
 (require 'init-dash)
 
 ;;(require 'init-twitter)
@@ -140,9 +141,10 @@
 (maybe-require-package 'regex-tool)
 (maybe-require-package 'dotenv-mode)
 
-(when (maybe-require-package 'uptimes)
-  (setq-default uptimes-keep-count 200)
-  (add-hook 'after-init-hook (lambda () (require 'uptimes))))
+;;; Gives me grief
+;; (when (maybe-require-package 'uptimes)
+;;   (setq-default uptimes-keep-count 200)
+;;   (add-hook 'after-init-hook (lambda () (require 'uptimes))))
 
 
 ;;----------------------------------------------------------------------------

@@ -29,6 +29,8 @@
 (add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
 
 ;;; Rtags Navigation
+
+;;; These function are not very stable
 (defun use-rtags (&optional useFileManager)
   (and (rtags-executable-find "rc")
        (cond ((not (gtags-get-rootpath)) t)
@@ -58,21 +60,21 @@
   (interactive)
   (call-interactively (if (use-rtags t) 'rtags-imenu 'idomenu)))
 
-(define-key c-mode-base-map (kbd "M-.") (function tags-find-symbol-at-point))
-(define-key c-mode-base-map (kbd "M-,") (function tags-find-references-at-point))
-(define-key c-mode-base-map (kbd "M-;") (function tags-find-file))
-(define-key c-mode-base-map (kbd "C-.") (function tags-find-symbol))
-(define-key c-mode-base-map (kbd "C-,") (function tags-find-references))
+(define-key c-mode-base-map (kbd "M-.") (function rtags-find-symbol-at-point))
+(define-key c-mode-base-map (kbd "M-,") (function rtags-find-references-at-point))
+;; (define-key c-mode-base-map (kbd "M-;") (function rtags-find-file))
+(define-key c-mode-base-map (kbd "C-.") (function rtags-find-symbol))
+(define-key c-mode-base-map (kbd "C-,") (function rtags-find-references))
 (define-key c-mode-base-map (kbd "C-<") (function rtags-find-virtuals-at-point))
-(define-key c-mode-base-map (kbd "M-i") (function tags-imenu))
+(define-key c-mode-base-map (kbd "M-i") (function rtags-imenu))
 
-(define-key global-map (kbd "M-.") (function tags-find-symbol-at-point))
-(define-key global-map (kbd "M-,") (function tags-find-references-at-point))
-(define-key global-map (kbd "M-;") (function tags-find-file))
-(define-key global-map (kbd "C-.") (function tags-find-symbol))
-(define-key global-map (kbd "C-,") (function tags-find-references))
+(define-key global-map (kbd "M-.") (function rtags-find-symbol-at-point))
+(define-key global-map (kbd "M-,") (function rtags-find-references-at-point))
+;; (define-key global-map (kbd "M-;") (function rtags-find-file))
+(define-key global-map (kbd "C-.") (function rtags-find-symbol))
+(define-key global-map (kbd "C-,") (function rtags-find-references))
 (define-key global-map (kbd "C-<") (function rtags-find-virtuals-at-point))
-(define-key global-map (kbd "M-i") (function tags-imenu))
+(define-key global-map (kbd "M-i") (function rtags-imenu))
 
 ;;; Disable default VC for Magit
 ;;; (setq vc-handled-backends nil)
@@ -241,13 +243,13 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
   (let ((process-environment
          (cons (concat "FZF_DEFAULT_COMMAND=git ls-files")
                process-environment))
-        (path (locate-dominating-file "/SCRATCH/anku/othello" ".git")))
+        (path (locate-dominating-file "/SCRATCH/anku/prevent" ".git")))
     (if path
-        (fzf/start "/SCRATCH/anku/othello")
+        (fzf/start "/SCRATCH/anku/prevent")
       (user-error "Not inside a Git repository"))))
 
-(if (file-directory-p "/SCRATCH/anku/othello/scripts/emacs/")
-    (progn(add-to-list 'load-path "/SCRATCH/anku/othello/scripts/emacs/")
+(if (file-directory-p "/SCRATCH/anku/prevent/scripts/emacs/")
+    (progn(add-to-list 'load-path "/SCRATCH/anku/prevent/scripts/emacs/")
           (load "prevent-common")
           (load "prevent-copyright")
           (load "prevent-gdb")
