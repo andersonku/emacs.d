@@ -1,4 +1,3 @@
-(maybe-require-package 'org-fstree)
 (when *is-a-mac*
   (maybe-require-package 'grab-mac-link))
 
@@ -55,6 +54,11 @@
       (url-copy-file url org-plantuml-jar-path))))
 
 
+;; Re-align tags when window shape changes
+(after-load 'org-agenda
+  (add-hook 'org-agenda-mode-hook
+            (lambda () (add-hook 'window-configuration-change-hook 'org-agenda-align-tags nil t))))
+
 
 
 
@@ -80,6 +84,7 @@ typical word processor."
         (set (make-local-variable 'blink-cursor-interval) 0.6)
         (set (make-local-variable 'show-trailing-whitespace) nil)
         (set (make-local-variable 'line-spacing) 0.2)
+        (set (make-local-variable 'electric-pair-mode) nil)
         (ignore-errors (flyspell-mode 1))
         (visual-line-mode 1))
     (kill-local-variable 'truncate-lines)
@@ -87,6 +92,7 @@ typical word processor."
     (kill-local-variable 'cursor-type)
     (kill-local-variable 'show-trailing-whitespace)
     (kill-local-variable 'line-spacing)
+    (kill-local-variable 'electric-pair-mode)
     (buffer-face-mode -1)
     ;; (delete-selection-mode -1)
     (flyspell-mode -1)
