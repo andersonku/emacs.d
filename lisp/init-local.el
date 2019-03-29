@@ -1,12 +1,14 @@
 ;;; Need to manually install ggtags vlf ahg ace-jump, helm, helm-swoop, etc...
-
+(normal-erase-is-backspace-mode 1)
+(toggle-debug-on-error)
 (require 'org)
 (require 'company)
+(require 'init-ak)
 ;; RTAGS stuff
 ;;; Diagnostics
 (setq rtags-autostart-diagnostics t)
 (rtags-diagnostics)
-(setq rtags-completions-enabled t)
+;;; (setq rtags-completions-enabled t)
 (require 'flycheck-rtags)
 ;; Optional explicitly select the RTags Flycheck checker for c or c++ major mode.
 ;; Turn off Flycheck highlighting, use the RTags one.
@@ -21,7 +23,7 @@
 (add-hook 'objc-mode-hook #'my-flycheck-rtags-setup)
 
 ;;; Rtags Completion
-(push 'company-rtags company-backends)
+;;; (push 'company-rtags company-backends)
 (define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
 (rtags-enable-standard-keybindings)
 (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
