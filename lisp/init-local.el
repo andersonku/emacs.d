@@ -270,5 +270,11 @@ When `universal-argument' is called first, cut whole buffer (but respect `narrow
           (add-hook 'c-mode-common-hook 'my-prevent-config)
           (add-to-list 'auto-mode-alist '("\\.ast$" . c-mode))))
 
+
+;; Goanna stuff
+(load "~/.emacs.d/site-lisp/goanna/gisl-mode.el")
+(load "~/.emacs.d/site-lisp/goanna/gpsl-mode.el")
+(load "~/.emacs.d/site-lisp/goanna/gxsl-mode.el")
+
 (provide 'init-local)
 ;;; init-local.el ends here
